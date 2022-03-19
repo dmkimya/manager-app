@@ -2,7 +2,7 @@ export const state = () => ({
   customers: [],
   products: [],
   history: [],
-  customer: {}
+  customer: {},
 });
 
 export const mutations = {
@@ -16,12 +16,22 @@ export const mutations = {
     state.history.push(history);
   },
   UPDATE_CUSTOMER(state, data) {
-    let index = state.customers.findIndex(customer => customer.id === data.id);
+    let index = state.customers.findIndex(
+      (customer) => customer.id === data.id
+    );
     this._vm.$set(state.customers, index, data);
+  },
+  DELETE_CUSTOMER(state, { id }) {
+    const customerIndex = state.customers.findIndex((customer) => {
+      return customer.id === id;
+    });
+    if (customerIndex > -1) {
+      state.customers.splice(customerIndex, 1);
+    }
   },
   CLEAR_HİSTORY(state) {
     state.history = [];
-  }
+  },
 };
 
 export const getters = {
@@ -36,31 +46,34 @@ export const getters = {
   },
   GET_TOTAL_BALANCE(state) {
     let total = 0;
-    state.customers.forEach(customer => {
+    state.customers.forEach((customer) => {
       total += customer.current_balance;
     });
 
     return total;
-  }
+  },
 };
 
 export const actions = {
   async getAllCustomersRealTime(context) {
-    this.$fire.firestore.collection("customers").onSnapshot(querySnapshot => {
-      querySnapshot.docChanges().forEach(change => {
+    this.$fire.firestore.collection("customers").onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
           context.commit("SET_CUSTOMERS", {
             ...change.doc.data(),
-            id: change.doc.id
+            id: change.doc.id,
           });
         }
         if (change.type === "modified") {
           context.commit("UPDATE_CUSTOMER", {
             ...change.doc.data(),
-            id: change.doc.id
+            id: change.doc.id,
           });
         }
         if (change.type === "removed") {
+          context.commit("DELETE_CUSTOMER", {
+            id: change.doc.id,
+          });
         }
       });
     });
@@ -84,11 +97,15 @@ export const actions = {
           tax_administration: "",
           tax_no: "",
           adress: "",
-          final_shopping_info: []
+          final_shopping_info: [],
         })
-        .then(customerRef => resolve(customerRef))
-        .catch(err => reject(err));
+        .then((customerRef) => resolve(customerRef))
+        .catch((err) => reject(err));
     });
+  },
+  async deleteCustomer(context, id) {
+    let customerRef = this.$fire.firestore.collection("customers");
+    return customerRef.doc(id).delete();
   },
   async getpaid(context, customer) {
     let new_balance =
@@ -103,13 +120,13 @@ export const actions = {
     return new Promise(async (resolve, reject) => {
       if (!seller)
         reject({
-          msg: "Satıcı kimliği belirsiz.Sayfayı yenileyip tekrar deneyin"
+          msg: "Satıcı kimliği belirsiz.Sayfayı yenileyip tekrar deneyin",
         });
       try {
         await ref.update({
           current_balance: new_balance,
           final_payment_amount: parseInt(customer.payment_amount),
-          final_payment_date: Date.now()
+          final_payment_date: Date.now(),
         });
 
         let shopping = {
@@ -118,7 +135,7 @@ export const actions = {
           company: customer.company_name,
           date: currentDate,
           seller: seller,
-          card: customer.card
+          card: customer.card,
         };
 
         await context.dispatch("saveShopping", shopping);
@@ -145,7 +162,7 @@ export const actions = {
           current_balance: new_balance,
           final_sales_amount: customer.sales_amount,
           final_shopping_info: customer.final_shopping,
-          final_sales_date: currentDate
+          final_sales_date: currentDate,
         });
 
         let shopping = {
@@ -154,7 +171,7 @@ export const actions = {
           company: customer.company_name,
           date: currentDate,
           seller: seller,
-          card:customer.card
+          card: customer.card,
         };
 
         await context.dispatch("saveShopping", shopping);
@@ -179,7 +196,7 @@ export const actions = {
           tax_title: updatedCustomer.tax_title,
           tax_administration: updatedCustomer.tax_administration,
           tax_no: updatedCustomer.tax_no,
-          adress: updatedCustomer.adress
+          adress: updatedCustomer.adress,
         });
 
         resolve("ok");
@@ -203,7 +220,7 @@ export const actions = {
           date: date,
           seller: seller,
           type: type,
-          card: card
+          card: card,
         });
 
         resolve("ok");
@@ -218,12 +235,12 @@ export const actions = {
     this.$fire.firestore
       .collection("history")
       .where("date", ">", start)
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
             context.commit("SET_CUSTOMERS_HİSTORY", {
               ...change.doc.data(),
-              id: change.doc.id
+              id: change.doc.id,
             });
           }
         });
@@ -236,15 +253,15 @@ export const actions = {
       .collection("history")
       .where("date", ">", start)
       .where("date", "<", end)
-      .onSnapshot(querySnapshot => {
-        querySnapshot.docChanges().forEach(change => {
+      .onSnapshot((querySnapshot) => {
+        querySnapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
             context.commit("SET_CUSTOMERS_HİSTORY", {
               ...change.doc.data(),
-              id: change.doc.id
+              id: change.doc.id,
             });
           }
         });
       });
-  }
+  },
 };
