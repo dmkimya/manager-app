@@ -2,7 +2,7 @@
   <section class="section">
     <b-table :data="workerCollectedList" :bordered="false">
       <b-table-column field="workerName" label="Kullanıcı" v-slot="props">
-        {{ props.row.workerName}}
+        {{ props.row.workerName }}
       </b-table-column>
       <b-table-column field="cash" label="Nakit" v-slot="props">
         {{ props.row.cash }} TL
@@ -24,8 +24,7 @@
 export default {
   data() {
     return {
-      workers: ["yonetim", "fikri", "Toplam"],
-      workerCollectedList: []
+      workerCollectedList: [],
     };
   },
   mounted() {
@@ -45,20 +44,20 @@ export default {
             workerName: worker,
             cash: totalCash,
             card: totalCard,
-            totalSell: totalSellSum
+            totalSell: totalSellSum,
           };
         }
         return {
           workerName: worker,
           cash: this.cashCollected(worker),
           card: this.cardCollected(worker),
-          totalSell: this.totalSellsAmount(worker)
+          totalSell: this.totalSellsAmount(worker),
         };
       });
     },
     cashCollected(worker) {
       let allTotal = 0;
-      this.todayShopping.forEach(shopping => {
+      this.todayShopping.forEach((shopping) => {
         if (
           shopping.seller == worker &&
           shopping.details.length === 0 &&
@@ -72,7 +71,7 @@ export default {
     },
     cardCollected(worker) {
       let allTotal = 0;
-      this.todayShopping.forEach(shopping => {
+      this.todayShopping.forEach((shopping) => {
         if (
           shopping.seller == worker &&
           shopping.details.length === 0 &&
@@ -86,26 +85,31 @@ export default {
     },
     totalSellsAmount(worker) {
       let allTotal = 0;
-      this.todayShopping.forEach(shopping => {
+      this.todayShopping.forEach((shopping) => {
         if (shopping.seller == worker && shopping.details.length > 0) {
           allTotal += parseFloat(shopping.quantity);
         }
       });
 
       return allTotal;
-    }
+    },
   },
   computed: {
     todayShopping() {
       const today = new Date().getDate();
       let history = this.$store.getters["customer/GET_CUSTOMERS_HİSTORY"];
-      return history.filter(el => new Date(el.date).getDate() === today);
-    }
+      return history.filter((el) => new Date(el.date).getDate() === today);
+    },
+    workers() {
+      const user = this.$store.getters["auth2/GET_USER"].split("@")[0];
+      console.log(user);
+      return [user, "Toplam"];
+    },
   },
   watch: {
     todayShopping() {
       this.updateData();
-    }
-  }
+    },
+  },
 };
 </script>

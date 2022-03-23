@@ -6,11 +6,12 @@
       @change="onChanged"
       class="is-flex is-justify-content-space-evenly is-flex-wrap-wrap py-4"
     >
-      <div style="min-width:5rem;" class="my-2">
+      <div style="min-width: 5rem" class="my-2">
         <b>Yonetim:</b> <input ref="yonetim" type="checkbox" value="yonetim" />
       </div>
-      <div style="min-width:5rem;" class="my-2">
-        <b>Dagıtım:</b> <input ref="fikri" type="checkbox" value="fikri" />
+      <div style="min-width: 5rem" class="my-2">
+        <b>Dagıtım:</b>
+        <input :ref="workerName" type="checkbox" :value="workerName" />
       </div>
     </div>
     <b-table
@@ -60,22 +61,25 @@ export default {
     }
   },
   components: {
-    TimePicker
+    TimePicker,
   },
   data() {
     return {
       filteredHistory: [],
-      checkeds: []
+      checkeds: [],
     };
   },
   methods: {
     onChanged() {
-      this.checkeds = [this.$refs.yonetim, this.$refs.fikri].filter(el => {
+      this.checkeds = [
+        this.$refs.yonetim,
+        this.$refs[`${this.workerName}`],
+      ].filter((el) => {
         if (el.checked) return true;
       });
 
-      const filteredHistory = this.history.filter(row => {
-        return this.checkeds.some(input => {
+      const filteredHistory = this.history.filter((row) => {
+        return this.checkeds.some((input) => {
           return input.value === row.seller;
         });
       });
@@ -85,7 +89,7 @@ export default {
       this.$buefy.dialog.alert({
         title: "Detay",
         message: `${details
-          .map(el => {
+          .map((el) => {
             return `
             <p>
                     <b>Ürün: </b>${el.product.name}
@@ -100,15 +104,18 @@ export default {
             `;
           })
           .join("")} `,
-        confirmText: "OK"
+        confirmText: "OK",
       });
-    }
+    },
   },
   computed: {
     history() {
       return this.$store.getters["customer/GET_CUSTOMERS_HİSTORY"];
-    }
-  }
+    },
+    workerName() {
+      return this.$store.getters["auth2/GET_USER"].split("@")[0];
+    },
+  },
 };
 </script>
 
