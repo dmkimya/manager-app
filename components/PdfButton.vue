@@ -46,6 +46,7 @@ export default {
         productsBody.push(subbody);
       });
 
+
       let docDefinition = {
         content: [
           {
