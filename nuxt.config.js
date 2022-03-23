@@ -98,7 +98,7 @@ export default {
     },
     manifest: {
       name: "Müsteri Takip",
-      short_name: "DM APP",
+      short_name: "DM FİKRİ",
       lang: "en"
     },
     icon: {
