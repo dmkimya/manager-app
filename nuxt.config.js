@@ -8,7 +8,7 @@ export default {
     fallback: true
   },
   head: {
-    title: "DM",
+    title: "REVOLİN",
     htmlAttrs: {
       lang: "en"
     },
@@ -98,7 +98,7 @@ export default {
     },
     manifest: {
       name: "Müsteri Takip",
-      short_name: "DM FİKRİ",
+      short_name: "REVOLİN",
       lang: "en"
     },
     icon: {
