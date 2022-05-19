@@ -46,7 +46,6 @@ export default {
         productsBody.push(subbody);
       });
 
-
       let docDefinition = {
         content: [
           {
@@ -67,20 +66,27 @@ export default {
             style: "info"
           },
           {
-            text: `Ayşe DEMİR Türkiye İş Bankası `,
+            text: `DM KİMYA İTHALAT İHRACAT SANAYİ LİMİTED ŞİRKETİ`,
             style: "iban"
           },
           {
             text: [
-              { text: `İBAN:  `, bold: "true" },
-              `TR200006400000122060670122`
+              { text: `İş Bankası İban No:  `, bold: "true" },
+              `TR030006400000122280205290`
+            ],
+            style: "ibanno"
+          },
+          {
+            text: [
+              { text: `Yapı Kredi İban No:  `, bold: "true" },
+              `TR490006701000000098739590`
             ],
             style: "ibanno"
           },
           {
             text: [
               { text: "ADRES: ", bold: "true" },
-              `Çınarönü mahallesi 1.adil sokak no:13 YILDIRIM/BURSA`
+              `Çınarönü mh. 3.çelik sokak no 22/A yıldırım/bursa`
             ],
             style: "adres"
           },
@@ -209,13 +215,13 @@ export default {
         }
       };
 
-       pdfMake
-        .createPdf(docDefinition)
-        .download(
-          `${moment().locale("tr").format("LL")}-${this.customer.company_name}`
-        ); 
+      pdfMake.createPdf(docDefinition).download(
+        `${moment()
+          .locale("tr")
+          .format("LL")}-${this.customer.company_name}`
+      );
 
-     // pdfMake.createPdf(docDefinition).open();
+      // pdfMake.createPdf(docDefinition).open();
     },
     oldBalance(balance) {
       let isCurrentShopping =
@@ -223,17 +229,12 @@ export default {
 
       if (isCurrentShopping < 0) isCurrentShopping *= -1;
 
-      console.log({
-        balance,
-        isCurrentShopping,
-        final_sales_amount: this.customer.final_sales_amount,
-        final_payment_amount: this.customer.final_payment_amount,
-        final_sales_date:this.customer.final_sales_date,
-        final_payment_date:this.customer.final_payment_date
-      });
-
       if (isCurrentShopping < 1000 * 60) {
-        return balance - (this.customer.final_sales_amount - this.customer.final_payment_amount);
+        return (
+          balance -
+          (this.customer.final_sales_amount -
+            this.customer.final_payment_amount)
+        );
       }
 
       if (this.customer.final_sales_date > this.customer.final_payment_date) {
